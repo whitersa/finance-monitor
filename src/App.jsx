@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { fetchPrices } from './services/itick'
+import { fetchPrices } from './services/api'
 import PriceCard from './components/PriceCard'
 import { RefreshCw } from 'lucide-react'
 import './App.css'
@@ -20,7 +20,7 @@ function App() {
       setPrices(data);
       setLastUpdated(new Date());
     } catch (err) {
-      setError("Failed to fetch data. Retrying...");
+      setError("数据获取失败，正在重试...");
     } finally {
       setLoading(false);
     }
@@ -28,15 +28,15 @@ function App() {
 
   useEffect(() => {
     loadData();
-    // Refresh every 60 seconds (1 minute update limit)
-    const interval = setInterval(loadData, 60000);
+    // Refresh every 30 seconds
+    const interval = setInterval(loadData, 30000);
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="app-container">
       <header className="app-header">
-        <h1 className="app-title">Precious Metals Monitor</h1>
+        <h1 className="app-title">贵金属实时监控</h1>
         <div className="status-bar">
           {lastUpdated && (
             <span className="last-updated">
