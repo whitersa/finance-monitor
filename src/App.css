@@ -81,6 +81,64 @@ body {
   animation: fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
+.card-wrapper {
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-radius: 16px;
+  /* Ensure the card click area is clear */
+}
+
+.card-wrapper:hover {
+  transform: translateY(-4px);
+  cursor: pointer;
+}
+
+.card-wrapper.active {
+  box-shadow: 0 0 0 2px var(--accent-gold);
+}
+
+.chart-section {
+    width: 100%;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 24px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    animation: fadeInUp 0.5s ease-out;
+    box-sizing: border-box; /* Important for padding */
+}
+
+.chart-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--card-border);
+}
+
+.chart-header h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+}
+
+.chart-container-box {
+    width: 100%;
+    min-height: 320px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.no-data {
+    color: var(--text-secondary);
+}
+
 .charts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));

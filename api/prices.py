@@ -3,7 +3,6 @@ Vercel Serverless Function - SGE Precious Metals Prices
 Data source: East Money (东方财富) - Shanghai Gold Exchange
 Market code: m:118 (上海黄金交易所)
 """
-from http.server import BaseHTTPRequestHandler
 import json
 import urllib.request
 import urllib.parse
@@ -104,28 +103,30 @@ def fetch_sge_prices():
     return results
 
 
-class handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        try:
-            prices = fetch_sge_prices()
-            response_data = {
-                "success": True,
-                "data": prices,
-                "timestamp": int(time.time()),
-                "source": "Shanghai Gold Exchange (上海黄金交易所)",
-            }
-            status = 200
-        except Exception as e:
-            response_data = {
-                "success": False,
-                "error": str(e),
-                "data": [],
-            }
-            status = 500
+def handler(request):
+    try:
+        prices = fetch_sge_prices()
+        response_data = {
+            "success": True,
+            "data": prices,
+            "timestamp": int(time.time()),
+            "source": "Shanghai Gold Exchange (上海黄金交易所)",
+        }
+        status = 200
+    except Exception as exc:
+        response_data = {
+            "success": False,
+            "error": str(exc),
+            "data": [],
+        }
+        status = 500
 
-        self.send_response(status)
-        self.send_header("Content-Type", "application/json")
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Cache-Control", "s-maxage=30, stale-while-revalidate")
-        self.end_headers()
-        self.wfile.write(json.dumps(response_data, ensure_ascii=False).encode("utf-8"))
+    return {
+        "statusCode": status,
+        "headers": {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Cache-Control": "s-maxage=30, stale-while-revalidate",
+        },
+        "body": json.dumps(response_data, ensure_ascii=False),
+    }

@@ -1,14 +1,8 @@
 {
-    "functions": {
-        "api/*.py": {
-            "runtime": "@vercel/python@4.5.0",
-            "maxDuration": 10
-        }
-    },
-    "rewrites": [
-        {
-            "source": "/api/(.*)",
-            "destination": "/api/$1"
-        }
-    ]
+	"rewrites": [
+		{
+			"source": "/((?!api/|.*\\..*).*)",
+			"destination": "/index.html"
+		}
+	]
 }
