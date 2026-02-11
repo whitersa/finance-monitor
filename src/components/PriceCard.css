@@ -1,0 +1,121 @@
+.price-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  min-width: 320px;
+  overflow: hidden;
+}
+
+.price-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+}
+
+.price-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.metal-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.trend-icon {
+  width: 24px;
+  height: 24px;
+  opacity: 0.8;
+}
+
+/* Dynamic glow based on trend can be added via JS style injection or classes, 
+   but here we keep it simple */
+.trend-icon.up {
+  color: var(--accent-up);
+}
+
+.trend-icon.down {
+  color: var(--accent-down);
+}
+
+.price-container {
+  display: flex;
+  align-items: baseline;
+  position: relative;
+}
+
+.current-price {
+  font-family: 'Inter', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.03em;
+  font-feature-settings: "tnum";
+  line-height: 1;
+}
+
+.change-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  padding: 6px 12px;
+  border-radius: 8px;
+  width: fit-content;
+}
+
+.change-container.up {
+  color: var(--accent-up);
+  background: rgba(248, 113, 113, 0.1);
+}
+
+.change-container.down {
+  color: var(--accent-down);
+  background: rgba(52, 211, 153, 0.1);
+}
+
+.secondary-price-container {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: -6px;
+  /* Slightly adjusted to accommodate potential layout changes */
+  padding-left: 4px;
+  font-family: 'Inter', sans-serif;
+}
+
+.unit {
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-left: 6px;
+  vertical-align: baseline;
+}
