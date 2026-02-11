@@ -1,6 +1,14 @@
 {
 	"rewrites": [
 		{
+			"source": "/api/prices",
+			"destination": "/api/prices.py"
+		},
+		{
+			"source": "/api/kline",
+			"destination": "/api/kline.py"
+		},
+		{
 			"source": "/(.*)",
 			"destination": "/index.html"
 		}
