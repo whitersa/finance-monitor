@@ -2,6 +2,7 @@ import json
 import urllib.request
 import urllib.parse
 from urllib.parse import parse_qs, urlparse
+from http.server import BaseHTTPRequestHandler
 
 # East Money K-Line API
 # https://push2his.eastmoney.com/api/qt/stock/kline/get
@@ -75,46 +76,51 @@ def _get_query_param(request, key, default=""):
     return default
 
 
-def handler(request):
-    code = _get_query_param(request, "code", "")
-    if not code:
-        response_data = {
-            "success": False,
-            "error": "Missing 'code' parameter",
-            "data": [],
-        }
-        return {
-            "statusCode": 400,
-            "headers": {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*",
-            },
-            "body": json.dumps(response_data, ensure_ascii=False),
-        }
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        # Extract query parameters directly from self.path
+        parsed_path = urlparse(self.path)
+        query_params = parse_qs(parsed_path.query)
+        code_list = query_params.get("code", [])
+        code = code_list[0] if code_list else None
 
-    try:
-        chart_data = fetch_kline_data(code)
-        response_data = {
-            "success": True,
-            "data": chart_data,
-            "symbol": code,
-            "period": "Daily",
-        }
-        status = 200
-    except Exception as exc:
-        response_data = {
-            "success": False,
-            "error": str(exc),
-            "data": [],
-        }
-        status = 500
+        if not code:
+            response_data = {
+                "success": False,
+                "error": "Missing 'code' parameter",
+                "data": [],
+            }
+            self.send_response(400)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps(response_data, ensure_ascii=False).encode('utf-8'))
+            return
 
-    return {
-        "statusCode": status,
-        "headers": {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-            "Cache-Control": "s-maxage=3600, stale-while-revalidate",
-        },
-        "body": json.dumps(response_data, ensure_ascii=False),
-    }
+        try:
+            chart_data = fetch_kline_data(code)
+            response_data = {
+                "success": True,
+                "data": chart_data,
+                "symbol": code,
+                "period": "Daily",
+            }
+            
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Cache-Control', 's-maxage=3600, stale-while-revalidate')
+            self.end_headers()
+            self.wfile.write(json.dumps(response_data, ensure_ascii=False).encode('utf-8'))
+            
+        except Exception as exc:
+            error_response = {
+                "success": False,
+                "error": str(exc),
+                "data": [],
+            }
+            self.send_response(500)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps(error_response, ensure_ascii=False).encode('utf-8'))

@@ -7,7 +7,7 @@ import json
 import urllib.request
 import urllib.parse
 import time
-
+from http.server import BaseHTTPRequestHandler
 
 # East Money API
 EASTMONEY_API = "https://push2.eastmoney.com/api/qt/clist/get"
@@ -103,30 +103,32 @@ def fetch_sge_prices():
     return results
 
 
-def handler(request):
-    try:
-        prices = fetch_sge_prices()
-        response_data = {
-            "success": True,
-            "data": prices,
-            "timestamp": int(time.time()),
-            "source": "Shanghai Gold Exchange (上海黄金交易所)",
-        }
-        status = 200
-    except Exception as exc:
-        response_data = {
-            "success": False,
-            "error": str(exc),
-            "data": [],
-        }
-        status = 500
-
-    return {
-        "statusCode": status,
-        "headers": {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-            "Cache-Control": "s-maxage=30, stale-while-revalidate",
-        },
-        "body": json.dumps(response_data, ensure_ascii=False),
-    }
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        try:
+            prices = fetch_sge_prices()
+            response_data = {
+                "success": True,
+                "data": prices,
+                "timestamp": int(time.time()),
+                "source": "Shanghai Gold Exchange (上海黄金交易所)",
+            }
+            
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Cache-Control', 's-maxage=30, stale-while-revalidate')
+            self.end_headers()
+            self.wfile.write(json.dumps(response_data, ensure_ascii=False).encode('utf-8'))
+            
+        except Exception as exc:
+            error_response = {
+                "success": False,
+                "error": str(exc),
+                "data": [],
+            }
+            self.send_response(500)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps(error_response, ensure_ascii=False).encode('utf-8'))
