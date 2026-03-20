@@ -1,57 +1,95 @@
 import React, { useEffect, useRef } from 'react';
-import { createChart, ColorType, CandlestickSeries } from 'lightweight-charts';
+import { createChart, ColorType, CandlestickSeries, CrosshairMode } from 'lightweight-charts';
 
-const ChartComponent = ({ data, colors = {} }) => {
+const ChartComponent = ({ data, colors = {}, symbolName = '' }) => {
   const chartContainerRef = useRef();
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
     const handleResize = () => {
-      chart.applyOptions({ width: chartContainerRef.current.clientWidth });
+      chart.applyOptions({ 
+        width: chartContainerRef.current.clientWidth,
+        height: chartContainerRef.current.clientHeight
+      });
     };
 
     const chart = createChart(chartContainerRef.current, {
       layout: {
-        background: { type: ColorType.Solid, color: colors.backgroundColor || '#1e1e1e' },
-        textColor: colors.textColor || '#d1d5db',
+        background: { type: ColorType.Solid, color: colors.backgroundColor || 'transparent' },
+        textColor: '#8c8c9a',
+        fontFamily: "'JetBrains Mono', monospace",
       },
       grid: {
-        vertLines: { color: 'rgba(42, 46, 57, 0.5)' },
-        horzLines: { color: 'rgba(42, 46, 57, 0.5)' },
+        vertLines: { color: 'rgba(255, 255, 255, 0.03)', style: 1 },
+        horzLines: { color: 'rgba(255, 255, 255, 0.03)', style: 1 },
+      },
+      crosshair: {
+        mode: CrosshairMode.Normal,
+        vertLine: {
+            width: 1,
+            color: 'rgba(255, 255, 255, 0.3)',
+            style: 1, // Dashed
+            labelBackgroundColor: '#2b2b36',
+        },
+        horzLine: {
+            width: 1,
+            color: 'rgba(255, 255, 255, 0.3)',
+            style: 1, // Dashed
+            labelBackgroundColor: '#2b2b36',
+        },
+      },
+      rightPriceScale: {
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+      },
+      timeScale: {
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        timeVisible: true,
+        secondsVisible: false,
+      },
+      watermark: {
+        color: 'rgba(255, 255, 255, 0.03)',
+        visible: !!symbolName,
+        text: symbolName,
+        fontSize: 100,
+        fontFamily: "'Outfit', sans-serif",
+        horzAlign: 'center',
+        vertAlign: 'center',
       },
       width: chartContainerRef.current.clientWidth,
-      height: 300,
+      height: chartContainerRef.current.clientHeight || 400, // use container height or fallback
     });
 
-    chart.timeScale().fitContent();
-
     const newSeries = chart.addSeries(CandlestickSeries, {
-      // Wait, Chinese markets usually: Red = Up, Green = Down.
-      // SGE is correct to follow this?
-      // Let's use standard Green/Red but be mindful. 
-      // Actually standard crypto/western: Green Up, Red Down.
-      // Chinese: Red Up, Green Down.
-      // Let's stick to Green Up for now unless specified, or customizable.
-      // Actually, let's use colors that match the app theme or standard financial colors.
-      upColor: '#26a69a', 
-      downColor: '#ef5350', 
+      // Chinese standard: Red up, Green down
+      upColor: '#ef5350', 
+      downColor: '#26a69a', 
       borderVisible: false, 
-      wickUpColor: '#26a69a', 
-      wickDownColor: '#ef5350',
+      wickUpColor: '#ef5350', 
+      wickDownColor: '#26a69a',
     });
 
     newSeries.setData(data);
+    chart.timeScale().fitContent();
 
     window.addEventListener('resize', handleResize);
+    
+    // Initial resize to fit flex container
+    const resizeObserver = new ResizeObserver(entries => {
+        if (entries.length === 0 || entries[0].target !== chartContainerRef.current) { return; }
+        const newRect = entries[0].contentRect;
+        chart.applyOptions({ height: newRect.height, width: newRect.width });
+    });
+    resizeObserver.observe(chartContainerRef.current);
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      resizeObserver.disconnect();
       chart.remove();
     };
-  }, [data, colors]);
+  }, [data, colors, symbolName]);
 
-  return <div ref={chartContainerRef} style={{ width: '100%' }} />;
+  return <div ref={chartContainerRef} style={{ width: '100%', height: '100%' }} />;
 };
 
 export default ChartComponent;
