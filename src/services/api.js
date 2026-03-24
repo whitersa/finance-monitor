@@ -43,49 +43,20 @@ export const fetchPrices = async () => {
       console.warn('Using mock data for development');
       return mockData();
     }
-    throw error;
   }
 };
 
 export const fetchHistory = async (symbol) => {
   const KLINE_URL = `/api/kline?code=${symbol}`;
-  
   try {
     const response = await fetch(KLINE_URL);
     if (!response.ok) throw new Error('Network response was not ok');
-    
     const json = await response.json();
-    if (json.success && json.data) {
-      return json.data;
-    }
+    if (json.success && json.data) return json.data;
     return [];
   } catch (error) {
     console.warn(`Failed to fetch history for ${symbol}:`, error);
-    // Return empty array or mock if needed
-    if (import.meta.env.DEV) {
-      console.warn('Using mock history data');
-      return generateMockHistory();
-    }
     return [];
   }
 };
 
-const generateMockHistory = () => {
-   const data = [];
-   let date = new Date();
-   date.setDate(date.getDate() - 100);
-   let price = 500;
-   for (let i = 0; i < 100; i++) {
-     date.setDate(date.getDate() + 1);
-     const open = price + Math.random() * 10 - 5;
-     const close = open + Math.random() * 10 - 5;
-     const high = Math.max(open, close) + Math.random() * 2;
-     const low = Math.min(open, close) - Math.random() * 2;
-     price = close;
-     data.push({
-       time: date.toISOString().split('T')[0],
-       open, high, low, close
-     });
-   }
-   return data;
-};

@@ -1,42 +1,70 @@
+/* Universal White Floating Module */
 .price-card {
   position: relative;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid transparent;
-  border-radius: 8px;
+  background-color: var(--card); /* PURE WHITE ALWAYS */
+  color: var(--card-foreground); /* BLACK TEXT ALWAYS */
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius); 
   padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  transition: all 0.2s ease-out;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+  transform: translateZ(0); /* Prevents sub-pixel font anti-aliasing jitter on hover */
   overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
+/* Obvious Brutalist Hover Shift */
+.price-card:hover {
+  background-color: var(--card);
+  border-color: var(--card-foreground); 
+  box-shadow: 2px 2px 0px 0px rgba(255,255,255,0.1), 0 4px 12px rgba(0,0,0,0.4);
+}
+
+/* Active: High contrast robust structure */
 .price-card.active {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: var(--card-border-active);
+  background-color: var(--background); /* Invert to pure black inside the active widget */
+  color: var(--foreground);
+  border-color: var(--foreground); 
+  box-shadow: 0 0 0 1px var(--foreground); /* Tight, non-overflowing white bounding box */
 }
 
-/* Flash Animations */
+/* Ensure inner structures respect the dark inversion mode on active state */
+.price-card.active .metal-name,
+.price-card.active .current-price {
+  color: var(--foreground); /* Pure White */
+}
+.price-card.active .unit,
+.price-card.active .card-bottom {
+  color: var(--muted-foreground);
+  border-top-color: rgba(255, 255, 255, 0.1); /* Soft dark mode inset divider */
+}
+
+/* Color transitions for flashes mapped to Light Mode aesthetics inside the white card */
 @keyframes flashRed {
-  0% { background: rgba(239, 83, 80, 0.3); }
-  100% { background: rgba(255, 255, 255, 0.02); }
+  0% { background-color: rgba(254, 226, 226, 1); border-color: rgba(239, 68, 68, 0.4); }
 }
 @keyframes flashGreen {
-  0% { background: rgba(38, 166, 154, 0.3); }
-  100% { background: rgba(255, 255, 255, 0.02); }
+  0% { background-color: rgba(209, 250, 229, 1); border-color: rgba(16, 185, 129, 0.4); }
 }
 
-.price-card.active.flash-up {
-  animation: flashRed 0.8s ease-out; /* Red is Up in China */
+@keyframes flashRedActive {
+  0% { background-color: rgba(153, 27, 27, 0.6); border-color: rgba(239, 68, 68, 1); }
 }
-.price-card.active.flash-down {
-  animation: flashGreen 0.8s ease-out; /* Green is Down in China */
+@keyframes flashGreenActive {
+  0% { background-color: rgba(6, 95, 70, 0.6); border-color: rgba(16, 185, 129, 1); }
 }
-.price-card.flash-up {
-  animation: flashRed 0.8s ease-out;
-}
-.price-card.flash-down {
-  animation: flashGreen 0.8s ease-out;
+
+.price-card.active.flash-up { animation: flashRedActive 0.8s ease-out; }
+.price-card.active.flash-down { animation: flashGreenActive 0.8s ease-out; }
+.price-card.flash-up { animation: flashRed 0.8s ease-out; }
+.price-card.flash-down { animation: flashGreen 0.8s ease-out; }
+
+.card-top, .card-main, .card-bottom {
+  position: relative;
+  z-index: 2;
 }
 
 .card-top {
@@ -46,29 +74,30 @@
 }
 
 .metal-name {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  letter-spacing: 0.05em;
+  font-family: inherit;
+  font-size: 0.875rem; 
+  font-weight: 700; 
+  color: var(--card-foreground); 
+  letter-spacing: -0.01em;
 }
 
+/* Shadcn badge style */
 .mini-change {
   font-family: var(--font-mono);
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 700;
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: calc(var(--radius) - 2px); 
 }
 
 .mini-change.up {
-  color: var(--accent-up);
-  background: rgba(239, 83, 80, 0.1);
+  color: #b91c1c; 
+  background-color: rgba(239, 68, 68, 0.1); 
 }
 
 .mini-change.down {
-  color: var(--accent-down);
-  background: rgba(38, 166, 154, 0.1);
+  color: #047857; 
+  background-color: rgba(16, 185, 129, 0.1); 
 }
 
 .card-main {
@@ -79,15 +108,18 @@
 
 .current-price {
   font-family: var(--font-mono);
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #ffffff;
+  font-size: 1.5rem; 
+  font-weight: 800; /* High weight looks amazing with Nunito digits */
+  color: var(--card-foreground);
   line-height: 1;
+  letter-spacing: -0.02em;
 }
 
 .unit {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--card-muted-foreground);
 }
 
 .card-bottom {
@@ -95,14 +127,12 @@
   justify-content: space-between;
   align-items: center;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  border-top: 1px dashed rgba(255,255,255,0.05);
-  padding-top: 8px;
+  font-size: 0.75rem; 
+  color: var(--card-muted-foreground);
+  border-top: 1px solid var(--card-border); 
+  padding-top: 12px;
 }
 
-.secondary-price {
-  font-size: 0.9em;
-}
-.secondary-change.up { color: var(--accent-up); }
-.secondary-change.down { color: var(--accent-down); }
+.secondary-price { font-size: 0.75rem; font-weight: 600; }
+.secondary-change.up { color: #b91c1c; font-weight: 700; }
+.secondary-change.down { color: #047857; font-weight: 700; }

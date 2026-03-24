@@ -1,107 +1,221 @@
-.home-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 80px 24px;
-  min-height: 100vh;
-  box-sizing: border-box;
-}
-
-.home-hero {
-  margin-bottom: 80px;
+/* Rigid App Shell Structural Architecture */
+.app-shell {
   display: flex;
-  justify-content: center;
-  text-align: center;
-  animation: fadeInDown 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  min-height: 100vh;
+  width: 100%;
 }
 
-.hero-content {
+/* --- REGION 1: Strict Pitch-Black Context Sidebar --- */
+.shell-sidebar {
+  width: 300px;
+  background-color: #030303; 
+  border-right: 1px solid var(--global-border);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 20px;
+  padding: 0;
+  flex-shrink: 0;
+  z-index: 10;
 }
 
-.avatar-placeholder {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+/* The exact 64px height perfectly aligns with the right shell-header */
+.sidebar-header {
+  height: 64px;
+  min-height: 64px;
+  border-bottom: 1px solid var(--global-border);
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-family: 'Outfit', sans-serif;
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: white;
-  box-shadow: 0 0 40px rgba(139, 92, 246, 0.3);
+  gap: 12px;
+  padding: 0 32px;
 }
 
-.hero-content h1 {
-  font-family: 'Outfit', sans-serif;
-  font-size: 3.5rem;
-  font-weight: 700;
+.sidebar-content {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Internal Sidebar Typography */
+.brand-icon {
+  color: var(--foreground);
+}
+.site-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--foreground);
   margin: 0;
   letter-spacing: -0.02em;
 }
 
-.hero-content h1 span {
-  background: linear-gradient(135deg, #10b981, #3b82f6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.hero-content p {
-  color: #8c8c9a;
-  font-size: 1.25rem;
-  margin: 0;
-  max-width: 600px;
-  line-height: 1.6;
-}
-
-.home-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 32px;
-  animation: fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.portal-card {
-  background: rgba(18, 18, 24, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 20px;
-  padding: 32px;
+.system-metrics {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
+}
+.metric-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--global-border);
+  padding-bottom: 12px;
+}
+.metric-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+.metric-value {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--foreground);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.metric-value.safe {
+  color: #10b981;
+}
+
+.sidebar-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.social-link {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
   text-decoration: none;
-  color: white;
-  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  transition: color 0.2s;
+}
+.social-link:hover {
+  color: var(--foreground);
+  text-decoration: underline;
+}
+.version-tag {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  opacity: 0.5;
+}
+
+/* --- REGION 2: The Main Application Zinc Void --- */
+.shell-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: transparent; 
+}
+
+/* --- REGION 2A: Structural Header Line --- */
+.shell-header {
+  height: 64px;
+  border-bottom: 1px solid var(--global-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  background-color: rgba(9, 9, 11, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.breadcrumb {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.breadcrumb .root {
+  color: var(--foreground);
+  font-weight: 700;
+}
+.breadcrumb .separator {
+  color: var(--muted-foreground);
+}
+.breadcrumb .current-path {
+  color: var(--muted-foreground);
+}
+.breadcrumb .highlight {
+  color: var(--foreground);
+  font-weight: 600;
+}
+.clock {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  letter-spacing: 0.05em;
+}
+
+/* --- REGION 2B: Application Grid Area --- */
+.shell-content {
+  /* Increased whitespace */
+  padding: 64px 80px;
+  max-width: 1300px;
+  width: 100%;
+}
+
+.section-title {
+  margin-bottom: 40px;
+}
+
+.section-title h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--foreground);
+  margin: 0 0 8px 0;
+  letter-spacing: -0.02em;
+}
+
+.section-title p {
+  color: var(--muted-foreground);
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* The application modules */
+.home-grid {
+  display: grid;
+  /* Auto-fill with tighter constraint for smaller, exquisite cards */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px; 
+}
+
+/* Float White Cards on Dark Background */
+.portal-card {
+  background-color: var(--card); /* Pure White */
+  border: 1px solid var(--card-border); /* Subtle light grey border */
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-decoration: none;
+  color: var(--card-foreground); /* Black Text */
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, outline 0.2s ease;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
 }
 
-.portal-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle at top left, rgba(255,255,255,0.06), transparent 70%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
+/* Obvious but static Brutalist Hover Shift */
 .portal-card:hover {
-  transform: translateY(-8px);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5);
+  background-color: var(--card); 
+  /* Sudden appearance of a thick rigorous black edge, consuming the soft border */
+  border-color: var(--card-foreground); 
+  /* Instantly deepen the text hierarchy internally */
+  /* And shift the shadow to a solid structural harsh offset */
+  box-shadow: 4px 4px 0px 0px rgba(255, 255, 255, 0.1), 0 8px 30px rgba(0,0,0,0.8);
 }
 
-.portal-card:hover::before {
-  opacity: 1;
+.card-top, .card-info {
+  position: relative;
+  z-index: 2;
 }
 
 .card-top {
@@ -111,63 +225,219 @@
 }
 
 .external-icon {
-  color: rgba(255,255,255,0.2);
-  transition: color 0.3s ease;
+  color: var(--card-muted-foreground);
+  transition: color 0.2s ease;
 }
 
 .portal-card:hover .external-icon {
-  color: white;
-}
-
-.finance-card {
-  border: 1px solid rgba(251, 191, 36, 0.15);
-}
-
-.finance-card:hover {
-  border-color: rgba(251, 191, 36, 0.6);
-  box-shadow: 0 20px 40px -10px rgba(251, 191, 36, 0.15);
-}
-
-.finance-card .card-icon {
-  color: #fbbf24;
-  background: rgba(251, 191, 36, 0.1);
+  color: var(--card-foreground);
 }
 
 .card-icon {
-  width: 64px;
-  height: 64px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
+  /* Smaller, polished icon block */
+  width: 40px;
+  height: 40px;
+  background-color: var(--card-hover); 
+  border-radius: calc(var(--radius) - 2px);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #8c8c9a;
+  color: var(--card-muted-foreground); /* Defaults to grey */
+  border: 1px solid var(--card-border);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.portal-card:hover .card-icon {
+  /* Upon hover, icon ignites stark black */
+  background-color: var(--card-foreground);
+  color: var(--card); /* Pure white icon */
+  border-color: var(--card-foreground);
 }
 
 .card-info h2 {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1.5rem;
-  margin: 0 0 12px 0;
-  font-weight: 600;
+  /* Refined, smaller typography */
+  font-size: 1.05rem;
+  margin: 0 0 6px 0;
+  font-weight: 800; 
+  letter-spacing: -0.01em;
 }
 
 .card-info p {
-  color: #8c8c9a;
+  color: var(--card-muted-foreground);
   margin: 0;
-  line-height: 1.6;
+  line-height: 1.5;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.portal-card:hover .card-info p {
+  /* Ignites to solid dark text for maximum starkness */
+  color: var(--card-foreground);
+  font-weight: 600;
 }
 
 .coming-soon {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
 .coming-soon:hover {
-  transform: none;
-  box-shadow: none;
-  border-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--card); /* disabled */
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
 }
 
-.coming-soon::before {
-  display: none;
+.spin-icon { animation: spin 1.5s linear infinite; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* --- MOBILE OPTIMIZATION --- */
+@media (max-width: 900px) {
+  .app-shell {
+    flex-direction: column;
+  }
+  
+  /* Transform the sidebar into a native mobile Top Navigation Bar */
+  .shell-sidebar {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    height: 64px !important;
+    padding: 0 20px !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    border-right: none;
+    border-bottom: 1px solid var(--global-border);
+    background-color: #030303; 
+    z-index: 50;
+    position: sticky;
+    top: 0;
+  }
+  
+  .sidebar-header {
+    height: auto;
+    border-bottom: none;
+    padding: 0;
+    gap: 10px;
+  }
+  
+  .sidebar-content {
+    padding: 0;
+    border-top: none;
+    flex: none;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+
+  .system-metrics {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+  }
+
+  /* Hide auxiliary metrics, strictly position weather in the top right */
+  .metric-item:not(:first-child) {
+    display: none;
+  }
+  .metric-label {
+    display: none; /* Hide verbal label 'METEROLOGY' */
+  }
+  .metric-item {
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+  }
+  
+  .metric-value {
+    font-size: 0.8rem;
+    line-height: normal; /* Restore default font metrics */
+    display: flex;
+    align-items: center;
+    margin: 0;
+  }
+
+  /* The desktop breadcrumb is too verbose for mobile */
+  .shell-header {
+    display: none; 
+  }
+
+  .shell-content {
+    padding: 24px 20px;
+  }
+
+  .section-title {
+    margin-bottom: 24px;
+  }
+  .section-title h2 {
+    font-size: 1.25rem;
+  }
+
+  /* Radically redesign cards into a horizontal iOS-style setting list for mobile */
+  .home-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .portal-card {
+    padding: 16px;
+    flex-direction: row; /* Horizontal split: Icon Left, Text Right */
+    align-items: center;
+    gap: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+
+  .portal-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+  }
+
+  .card-top {
+    flex: none; /* Stop flex stretching */
+    width: auto; 
+  }
+
+  .external-icon {
+    display: none; /* Hide confusing external top-right icons on mobile */
+  }
+
+  .card-icon {
+    width: 46px; /* Native tap target size */
+    height: 46px;
+    border-radius: 10px;
+  }
+  
+  .card-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .card-info {
+    flex: 1; /* Take the remaining horizontal space */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .card-info h2 {
+    font-size: 1rem;
+    margin-bottom: 4px;
+  }
+
+  .card-info p {
+    font-size: 0.8rem;
+    line-height: 1.3;
+    /* Elegant text truncation for mobile */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
+

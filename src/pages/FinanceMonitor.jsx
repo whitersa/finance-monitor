@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchPrices, fetchHistory } from '../services/api'
 import PriceCard from '../components/PriceCard'
-import ChartComponent from '../components/ChartComponent'
-import { RefreshCw, Activity, ArrowLeft } from 'lucide-react'
+import { Activity, ArrowLeft, RefreshCw } from 'lucide-react'
+import './Home.css'
 import './FinanceMonitor.css'
 
 function FinanceMonitor() {
@@ -32,126 +32,137 @@ function FinanceMonitor() {
           if (updated) setSelectedSymbol(updated);
       }
     } catch (err) {
-      setError("数据获取失败，正在重试...");
+      setError("FAILED TO ACQUIRE DATA STREAM");
     } finally {
       setLoading(false);
     }
   };
 
   const loadHistory = async (symbol) => {
-      if (!symbol) return;
-      setHistoryLoading(true);
-      try {
-          const data = await fetchHistory(symbol.id);
-          setHistoryData(data);
-      } catch (err) {
-          console.error(err);
-      } finally {
-          setHistoryLoading(false);
-      }
+    if (!symbol) return;
+    setHistoryLoading(true);
+    try {
+        const data = await fetchHistory(symbol.id);
+        if (data && data.length > 0) {
+            setHistoryData(data);
+        }
+    } catch (err) {
+        console.error("Failed history:", err);
+    } finally {
+        setHistoryLoading(false);
+    }
   };
 
   useEffect(() => {
     loadData();
-    const interval = setInterval(loadData, 30000); // 30s update
+    const interval = setInterval(loadData, 30000);
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-      if (selectedSymbol) {
-          loadHistory(selectedSymbol);
-      }
+    if (selectedSymbol) {
+        loadHistory(selectedSymbol);
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSymbol?.id]);
 
-  const handleCardClick = (item) => {
-      if (selectedSymbol?.id !== item.id) {
-          setSelectedSymbol(item);
-      }
+  const getHistoricalChange = (tradingDaysAgo) => {
+    if (!historyData || historyData.length === 0) return null;
+    const targetIdx = Math.max(0, historyData.length - tradingDaysAgo);
+    const startPrice = historyData[targetIdx].open;
+    const endPrice = selectedSymbol.price;
+    const diff = endPrice - startPrice;
+    const pct = (diff / startPrice) * 100;
+    return {
+      diff: Number(diff.toFixed(2)),
+      pct: Number(pct.toFixed(2)),
+      isUp: diff >= 0,
+      label: tradingDaysAgo === 250 ? '1 YEAR' : tradingDaysAgo === 65 ? '3 MONTHS' : '1 MONTH'
+    };
   };
 
-  return (
-    <div className="finance-app-container">
-      <header className="finance-app-header">
-        <Link to="/" className="back-link">
-          <ArrowLeft size={18} />
-          <span>Home</span>
-        </Link>
-        <h1 className="finance-app-title">TERMINAL <span>V1.0</span></h1>
-        <div className="status-bar">
-          <Activity size={16} className={loading && prices.length > 0 ? "spin-icon" : "pulse-icon"} color="#34d399" />
-          <div className="status-text">
-            <span>Market Live</span>
-            {lastUpdated && (
-              <span className="last-updated">
-                {lastUpdated.toLocaleTimeString()}
-              </span>
-            )}
-          </div>
-        </div>
-      </header>
+  const volatilityStats = [
+    { label: 'TODAY (1D)', stats: { diff: selectedSymbol?.change, pct: selectedSymbol?.changePercent, isUp: selectedSymbol?.isUp } },
+    getHistoricalChange(22),
+    getHistoricalChange(65),
+    getHistoricalChange(250)
+  ].filter(Boolean);
 
-      <main className="dashboard-layout">
-        {loading && prices.length === 0 ? (
-          <div className="loading-state">
-            <RefreshCw className="spin-icon large" />
-            <p>INITIALIZING TERMINAL...</p>
+  return (
+    <div className="app-shell">
+      {/* Detail Page: Header is now the absolute top element */}
+      <div className="shell-main">
+        <header className="shell-header">
+           <div className="breadcrumb">
+             <Link to="/" className="back-link-icon"><ArrowLeft size={18}/></Link>
+             <span className="separator">/</span>
+             <span className="root">~</span>
+             <span className="separator">/</span>
+             <span className="current-path highlight">macro-terminal</span>
+           </div>
+           
+           <div className="terminal-status">
+              <span className="time-display">{lastUpdated ? lastUpdated.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'SYNC'}</span>
+           </div>
+        </header>
+
+        {/* Sidebar: Now follows the header */}
+        <aside className="shell-sidebar terminal-sidebar">
+          <div className="terminal-watchlist">
+             {loading && prices.length === 0 ? (
+               <div className="sidebar-initial">INITIALIZING...</div>
+             ) : (
+               prices.map(item => (
+                 <div key={item.id} onClick={() => setSelectedSymbol(item)} className="card-wrapper">
+                   <PriceCard data={item} isActive={selectedSymbol?.id === item.id} />
+                 </div>
+               ))
+             )}
           </div>
-        ) : error ? (
-          <div className="error-state">
-            <p>{error}</p>
-          </div>
-        ) : (
-          <>
-            <aside className="sidebar">
-              <div className="sidebar-header">
-                <h3>WATCHLIST</h3>
-              </div>
-              <div className="watchlist-scroll">
-                {prices.map(item => (
-                  <div 
-                    key={item.id} 
-                    onClick={() => handleCardClick(item)} 
-                    className={`card-wrapper`}
-                  >
-                      <PriceCard data={item} isActive={selectedSymbol?.id === item.id} />
-                  </div>
-                ))}
-              </div>
-            </aside>
-            
-            <section className="main-view">
-              {selectedSymbol && (
-                <div className="chart-section">
-                    <div className="chart-header">
-                        <div className="chart-title">
-                            <h2>{selectedSymbol.name} <span className="symbol-id">{selectedSymbol.id}</span></h2>
-                        </div>
-                        <div className="chart-stats">
-                           <span className="stat-value">{selectedSymbol.symbol || '$'}{selectedSymbol.price}</span>
-                           <span className={`stat-change ${selectedSymbol.isUp ? 'up' : 'down'}`}>
-                             {selectedSymbol.change > 0 ? '+' : ''}{selectedSymbol.change}%
+        </aside>
+
+        <main className="shell-content terminal-content">
+           {selectedSymbol ? (
+               <div className="macro-dashboard">
+                   {/* HERO SECTION */}
+                   <div className="price-hero">
+                       <div className="hero-meta">
+                           <h2>{selectedSymbol.name} <span className="symbol-id">{selectedSymbol.id}</span></h2>
+                           <span className="live-tag">LIVE</span>
+                       </div>
+                       <div className="hero-price">
+                           <span className="main-price">
+                               {selectedSymbol.symbol || '¥'}{selectedSymbol.price.toFixed(2)}
                            </span>
-                        </div>
-                        {historyLoading && <span className="loading-text"><RefreshCw className="spin-icon" size={14}/></span>}
-                    </div>
-                    <div className="chart-container-box">
-                        {historyData.length > 0 ? (
-                            <ChartComponent 
-                              data={historyData} 
-                              symbolName={selectedSymbol.name}
-                              colors={{ backgroundColor: 'transparent' }} 
-                            />
-                        ) : (
-                            !historyLoading && <p className="no-data">NO HISTORY DATA</p>
-                        )}
-                    </div>
-                </div>
-              )}
-            </section>
-          </>
-        )}
-      </main>
+                           <span className="main-unit">{selectedSymbol.unit}</span>
+                       </div>
+                   </div>
+
+                   {/* VOLATILITY GRID */}
+                   <div className="volatility-grid">
+                        {volatilityStats.map((item, idx) => {
+                            const isFetching = historyLoading && idx > 0;
+                            return (
+                                <div key={idx} className={`vol-block ${isFetching ? 'is-fetching' : ''}`}>
+                                    <div className="vol-header">
+                                        <span className="vol-label">{item.label}</span>
+                                        {isFetching && <RefreshCw size={12} className="spin-icon"/>}
+                                    </div>
+                                    <div className={`vol-value ${item.stats?.isUp ?? item.isUp ? 'up' : 'down'}`}>
+                                        <span className="vol-pct">
+                                            {(item.stats?.pct ?? item.pct) > 0 ? '+' : ''}{item.stats?.pct ?? item.pct}%
+                                        </span>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                   </div>
+               </div>
+           ) : (
+               (!loading || prices.length > 0) && <div className="no-selection">SELECT INSTRUMENT</div>
+           )}
+        </main>
+      </div>
     </div>
   )
 }

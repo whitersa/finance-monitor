@@ -26,7 +26,7 @@ const PriceCard = ({ data, isActive }) => {
             <div className="card-top">
                 <span className="metal-name">{name}</span>
                 <span className={`mini-change ${isUp ? 'up' : 'down'}`}>
-                    {changePercent}%
+                    {changePercent > 0 ? '+' : ''}{changePercent}%
                 </span>
             </div>
             
