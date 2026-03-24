@@ -28,3 +28,7 @@ dist-ssr
 
 .vercel
 .env*.local
+
+# Python
+**/*.pyc
+**/__pycache__/
