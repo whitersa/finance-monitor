@@ -95,7 +95,22 @@ function FinanceMonitor() {
 
   return (
     <div className="app-shell">
-      {/* Detail Page: Header is now the absolute top element */}
+      {/* LEFT: Sidebar Watchlist */}
+      <aside className="shell-sidebar terminal-sidebar">
+        <div className="terminal-watchlist">
+          {loading && prices.length === 0 ? (
+            <div className="sidebar-initial">INITIALIZING...</div>
+          ) : (
+            prices.map(item => (
+              <div key={item.id} onClick={() => setSelectedSymbol(item)} className="card-wrapper">
+                <PriceCard data={item} isActive={selectedSymbol?.id === item.id} />
+              </div>
+            ))
+          )}
+        </div>
+      </aside>
+
+      {/* RIGHT: Main Panel (Header + Content) */}
       <div className="shell-main">
         <header className="shell-header">
            <div className="breadcrumb">
@@ -110,21 +125,6 @@ function FinanceMonitor() {
               <span className="time-display">{lastUpdated ? lastUpdated.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'SYNC'}</span>
            </div>
         </header>
-
-        {/* Sidebar: Now follows the header */}
-        <aside className="shell-sidebar terminal-sidebar">
-          <div className="terminal-watchlist">
-             {loading && prices.length === 0 ? (
-               <div className="sidebar-initial">INITIALIZING...</div>
-             ) : (
-               prices.map(item => (
-                 <div key={item.id} onClick={() => setSelectedSymbol(item)} className="card-wrapper">
-                   <PriceCard data={item} isActive={selectedSymbol?.id === item.id} />
-                 </div>
-               ))
-             )}
-          </div>
-        </aside>
 
         <main className="shell-content terminal-content">
            {selectedSymbol ? (
