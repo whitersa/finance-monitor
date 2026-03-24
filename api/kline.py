@@ -9,7 +9,7 @@ from datetime import datetime
 EASTMONEY_KLINE_API = "https://push2his.eastmoney.com/api/qt/stock/kline/get"
 
 SYMBOL_MARKET = {
-    "AU9999": "118", # SGE
+    "AU9999": "118", # SGE Gold
     "SI00Y":  "102", # COMEX Silver
     "HG00Y":  "102", # COMEX Copper
     "CL00Y":  "102", # NYMEX Crude

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchPrices, fetchHistory } from '../services/api'
 import PriceCard from '../components/PriceCard'
+import Ticker from '../components/Ticker'
 import { Activity, ArrowLeft, RefreshCw } from 'lucide-react'
 import './Home.css'
 import './FinanceMonitor.css'
@@ -41,10 +42,13 @@ function FinanceMonitor() {
   const loadHistory = async (symbol) => {
     if (!symbol) return;
     setHistoryLoading(true);
+    setHistoryData([]); // CLEAR OLD DATA IMMEDIATELY
     try {
         const data = await fetchHistory(symbol.id);
         if (data && data.length > 0) {
             setHistoryData(data);
+        } else {
+            setHistoryData([]); // EXPLICIT NULL STATE
         }
     } catch (err) {
         console.error("Failed history:", err);
@@ -82,11 +86,11 @@ function FinanceMonitor() {
   };
 
   const volatilityStats = [
-    { label: 'TODAY (1D)', stats: { diff: selectedSymbol?.change, pct: selectedSymbol?.changePercent, isUp: selectedSymbol?.isUp } },
-    getHistoricalChange(22),
-    getHistoricalChange(65),
-    getHistoricalChange(250)
-  ].filter(Boolean);
+    { label: 'TODAY (1D)', stats: selectedSymbol ? { diff: selectedSymbol.change, pct: selectedSymbol.changePercent, isUp: selectedSymbol.isUp } : null },
+    { label: '1 MONTH', stats: getHistoricalChange(22) },
+    { label: '3 MONTHS', stats: getHistoricalChange(65) },
+    { label: '1 YEAR', stats: getHistoricalChange(250) }
+  ];
 
   return (
     <div className="app-shell">
@@ -148,15 +152,17 @@ function FinanceMonitor() {
                                         <span className="vol-label">{item.label}</span>
                                         {isFetching && <RefreshCw size={12} className="spin-icon"/>}
                                     </div>
-                                    <div className={`vol-value ${item.stats?.isUp ?? item.isUp ? 'up' : 'down'}`}>
+                                    <div className={`vol-value ${item.stats ? (item.stats.isUp ? 'up' : 'down') : 'muted'}`}>
                                         <span className="vol-pct">
-                                            {(item.stats?.pct ?? item.pct) > 0 ? '+' : ''}{item.stats?.pct ?? item.pct}%
+                                            {item.stats ? `${item.stats.pct > 0 ? '+' : ''}${item.stats.pct}%` : 'N/A'}
                                         </span>
                                     </div>
                                 </div>
                             );
                         })}
                    </div>
+
+                   <Ticker currentSymbol={selectedSymbol} stats={volatilityStats} />
                </div>
            ) : (
                (!loading || prices.length > 0) && <div className="no-selection">SELECT INSTRUMENT</div>
