@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { fetchPrices, fetchHistory } from '../services/api'
 import PriceCard from '../components/PriceCard'
 import Ticker from '../components/Ticker'
+import MacroSentiment from '../components/MacroSentiment'
 import { Activity, ArrowLeft, RefreshCw } from 'lucide-react'
 import './Home.css'
 import './FinanceMonitor.css'
@@ -142,8 +143,11 @@ function FinanceMonitor() {
                        </div>
                    </div>
 
-                   {/* VOLATILITY GRID */}
-                   <div className="volatility-grid">
+                    {/* MACRO SENTIMENT PANEL */}
+                    <MacroSentiment prices={prices} />
+
+                    {/* VOLATILITY GRID */}
+                    <div className="volatility-grid">
                         {volatilityStats.map((item, idx) => {
                             const isFetching = historyLoading && idx > 0;
                             return (

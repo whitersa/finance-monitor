@@ -1,0 +1,70 @@
+.macro-sentiment-container {
+  margin-top: 10px;
+  width: 100%;
+}
+
+.sentiment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.sentiment-card {
+  background: #09090b;
+  border: 1px solid #1a1a1a;
+  padding: 20px;
+  border-radius: 12px;
+  border-left: 4px solid var(--accent);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.sentiment-card:hover {
+  background: #111113;
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  color: var(--accent);
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #000;
+}
+
+.card-label {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.card-desc {
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: #888;
+}
+
+/* MOBILE RESPONSIVENESS */
+@media (max-width: 900px) {
+  .macro-sentiment-wrapper {
+    padding: 16px;
+    margin-top: 24px;
+  }
+  .sentiment-grid {
+    grid-template-columns: 1fr;
+  }
+  .card-label { font-size: 1rem; }
+}

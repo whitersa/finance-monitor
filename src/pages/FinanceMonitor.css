@@ -11,7 +11,7 @@
 .shell-header {
   height: 52px;
   min-height: 52px;
-  padding: 0 16px;
+  padding: 0 24px;
   border-bottom: 1px solid var(--global-border);
   display: flex;
   justify-content: space-between;
@@ -143,9 +143,9 @@
 
 .main-price {
   font-family: var(--font-mono);
-  font-size: 4.5rem;
+  font-size: 3.5rem; /* Reduced from 4.5rem to avoid clipping */
   font-weight: 800;
-  line-height: 0.9;
+  line-height: 1.1; /* Normalized */
   letter-spacing: -0.04em;
 }
 
@@ -182,9 +182,10 @@
 
 .vol-pct {
   font-family: var(--font-mono);
-  font-size: 1.5rem;
+  font-size: 1.25rem; /* Reduced from 1.5rem for large numbers */
   font-weight: 800;
-  line-height: 1;
+  line-height: 1.2;
+  overflow-wrap: break-word; /* Safety for huge indices */
 }
 
 .vol-diff {
@@ -207,7 +208,8 @@
   
   .shell-sidebar {
     width: 100%;
-    height: 72px; /* EXTREMELY COMPACT RAIL */
+    height: auto; /* Changed from 72px to auto */
+    min-height: 80px;
     border-right: none;
     background: #0a0a0a;
     border-bottom: 1px solid var(--global-border);
@@ -228,11 +230,11 @@
 
   /* Correct PriceCard Inversion for Mobile Slider */
   .card-wrapper .price-card {
-    padding: 6px 10px;
-    height: 52px; /* Small pill height */
-    gap: 2px;
+    padding: 8px 12px;
+    height: auto; 
+    min-height: 60px;
+    gap: 4px;
     box-shadow: none;
-    /* FIX: Unselected state is dark with subtle border (Shadcn ghost style) */
     background: #111 !important;
     border-color: #222 !important;
     color: #888 !important;
@@ -247,7 +249,7 @@
 
   .card-wrapper .metal-name { font-size: 0.7rem; color: inherit; }
   .card-wrapper .current-price { font-size: 1rem; color: inherit; line-height: 1; }
-  .card-wrapper .mini-change { display: none; } /* Hide change on small mobile rail to save height */
+  .card-wrapper .mini-change { display: inline-flex; font-size: 0.65rem; } 
   .card-wrapper .card-main { justify-content: flex-start; }
 
   .macro-dashboard {
